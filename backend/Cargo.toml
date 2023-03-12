@@ -1,0 +1,27 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.69"
+jsonwebtoken = { version = "8.2.0", default-features = false }
+parking_lot = { version = "0.12.1", default-features = false }
+salvo = { version = "0.37", default-features = false, features = [
+  "affix",
+  "anyhow",
+  "jwt-auth",
+  "logging",
+] }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+thiserror = { version = "1.0", default-features = false }
+time = { version = "0.3", default-features = false }
+tokio = { version = "1.26", default-features = false, features = ["macros"] }
+tracing = { version = "0.1", default-features = false }
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+  "ansi",
+  "fmt",
+  "parking_lot",
+  "smallvec",
+  "std",
+] }
