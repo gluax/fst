@@ -8,6 +8,7 @@ pub struct Login<'a> {
     password: Cow<'a, str>,
 }
 
+// TODO Proc macro derive Validate trait.
 #[salvo::async_trait]
 impl<'a> Validate for Login<'a> {
     type Error = crate::errors::Login;
@@ -15,7 +16,6 @@ impl<'a> Validate for Login<'a> {
     async fn validate(req: &mut Request) -> Result<()> {
         tracing::info!("Login Validate");
         let mut error = Self::Error::default();
-        // TODO figure out how to shorthand this
         let data = match req.parse_json::<Login<'_>>().await {
             Err(e) => {
                 error.deserialize = Some(e.to_string());

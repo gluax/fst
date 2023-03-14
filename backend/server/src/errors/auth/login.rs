@@ -1,8 +1,7 @@
 use super::*;
 
-// TODO fix repetitiveness
-// TODO how to set default strings?
-#[derive(Debug, Default, Serialize)]
+// TODO fix repetitiveness: proc macro
+#[derive(Debug, Default, Serialize, PartialEq, Eq)]
 pub struct Login {
     #[serde(rename = "deserialize_error")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -15,10 +14,11 @@ pub struct Login {
     pub password: Option<String>,
 }
 
+// TODO proc macro can derive this as well
 impl ErrorIf for Login {
     fn error_or_ok(self) -> Result<()> {
         // TODO how to shorthand this logic
-        if self.username.is_none() && self.password.is_none() && self.deserialize.is_none() {
+        if self == Self::default() {
             tracing::info!("Oked");
             Ok(())
         } else {
@@ -28,10 +28,11 @@ impl ErrorIf for Login {
     }
 }
 
-#[salvo::async_trait]
-impl Writer for Login {
-    async fn write(mut self, _: &mut Request, _: &mut Depot, res: &mut Response) {
+// TODO proc macro can derive this as well.
+impl Piece for Login {
+    fn render(self, res: &mut Response) {
         tracing::info!("Login");
+        // self.status_code = StatusCode::NOT_ACCEPTABLE.as_u16();
         res.set_status_error(StatusError::not_acceptable());
         res.render(Json(self));
     }

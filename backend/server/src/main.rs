@@ -46,8 +46,7 @@ async fn main() {
     let router = Router::with_hoop(auth_handler)
         .hoop(affix::inject(Store::default()))
         .hoop(salvo::logging::Logger)
-        .hoop(middleware::headers)
-        // .get(hello_world)
+        .hoop(middleware::set_status_code)
         .push(Router::with_path("login").post(crate::api::login));
     tracing::info!("Listening on http://127.0.0.1:8888");
     Server::new(TcpListener::bind("127.0.0.1:8888"))

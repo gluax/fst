@@ -1,4 +1,5 @@
 use salvo::writer::Json;
+use serde_json::json;
 
 use super::*;
 
@@ -6,8 +7,9 @@ use super::*;
 pub async fn login(req: &mut Request, res: &mut Response) -> Result<()> {
     tracing::info!("login");
     Login::validate(req).await?;
-    // TODO: StatusCode::OK.as_u16();
     res.set_status_code(StatusCode::OK);
-    res.render(Json("ok"));
+    res.render(Json(json!({
+        "status": "Logged in.",
+    })));
     Ok(())
 }

@@ -10,9 +10,8 @@ pub struct Register {
     password_confirmation: Option<String>,
 }
 
-#[salvo::async_trait]
-impl Writer for Register {
-    async fn write(mut self, _: &mut Request, _: &mut Depot, res: &mut Response) {
+impl Piece for Register {
+    fn render(self, res: &mut Response) {
         tracing::info!("Register");
         res.set_status_error(StatusError::not_acceptable());
         res.render(Json(self));
