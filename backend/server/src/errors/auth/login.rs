@@ -31,8 +31,6 @@ impl ErrorIf for Login {
 // TODO proc macro can derive this as well.
 impl Piece for Login {
     fn render(self, res: &mut Response) {
-        tracing::info!("Login");
-        // self.status_code = StatusCode::NOT_ACCEPTABLE.as_u16();
         res.set_status_error(StatusError::not_acceptable());
         res.render(Json(self));
     }

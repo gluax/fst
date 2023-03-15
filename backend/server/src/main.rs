@@ -1,14 +1,14 @@
-use std::{borrow::Cow, collections::HashMap, sync::Arc};
+use std::borrow::Cow;
 
+mod affixes;
+use affixes::*;
 mod api;
 mod errors;
 mod middleware;
 mod models;
 mod utils;
 
-use parking_lot::RwLock;
 use salvo::{
-    affix,
     jwt_auth::QueryFinder,
     prelude::{JwtAuth, TcpListener},
     Router, Server,
@@ -16,11 +16,6 @@ use salvo::{
 use serde::{Deserialize, Serialize};
 
 const SECRET_KEY: &str = "SECRET_KEY";
-
-#[derive(Debug, Clone, Default)]
-pub struct Store {
-    pub users: Arc<RwLock<HashMap<String, String>>>,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims<'a> {
@@ -43,8 +38,9 @@ async fn main() {
         ])
         .with_response_error(false);
 
-    let router = Router::with_hoop(auth_handler)
-        .hoop(affix::inject(Store::default()))
+    let mut router = Router::with_hoop(auth_handler);
+    router = attach_affixes(router).await;
+    router = router
         .hoop(salvo::logging::Logger)
         .hoop(middleware::set_status_code)
         .push(Router::with_path("login").post(crate::api::login));

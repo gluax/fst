@@ -12,7 +12,6 @@ pub struct Register {
 
 impl Piece for Register {
     fn render(self, res: &mut Response) {
-        tracing::info!("Register");
         res.set_status_error(StatusError::not_acceptable());
         res.render(Json(self));
     }

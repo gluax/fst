@@ -13,7 +13,6 @@ pub enum Auth {
 
 impl Piece for Auth {
     fn render(self, res: &mut Response) {
-        tracing::info!("Auth");
         match self {
             Self::Login(l) => l.render(res),
             // Self::Register(r) => r.write(req, depot, res).await,
