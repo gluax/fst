@@ -1,11 +1,12 @@
 [package]
-name = "server"
+name = "fst-server"
 version = "0.1.0"
 edition = "2021"
 rust-version.workspace = true
 
 [dependencies]
 jsonwebtoken = { workspace = true }
+fst-macros = { workspace = true }
 mongodb = { workspace = true, features = ["tokio-runtime"] }
 parking_lot = { workspace = true }
 salvo = { workspace = true, features = [

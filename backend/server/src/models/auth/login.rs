@@ -14,7 +14,6 @@ impl<'a> Validate for Login<'a> {
     type Error = crate::errors::Login;
 
     async fn validate(req: &mut Request) -> Result<()> {
-        tracing::info!("Login Validate");
         let mut error = Self::Error::default();
         let data = match req.parse_json::<Login<'_>>().await {
             Err(e) => {
@@ -25,12 +24,10 @@ impl<'a> Validate for Login<'a> {
         };
 
         if data.username.is_empty() {
-            tracing::info!("empty username");
             error.username = Some("Username cannot be empty.".to_string());
         }
 
         if data.password.is_empty() {
-            tracing::info!("empty password");
             error.password = Some("Password cannot be empty.".to_string());
         }
 

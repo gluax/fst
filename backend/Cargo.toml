@@ -21,8 +21,9 @@ panic = "abort"
 strip = true
 
 [workspace.dependencies]
-anyhow = "1.0.69"
+fst-macros = { path = "./macros" }
 jsonwebtoken = { version = "8.2", default-features = false }
+mongodb = { version = "2.4", default-features = false }
 parking_lot = { version = "0.12", default-features = false }
 salvo = { version = "0.37", default-features = false, features = [
   "affix",

@@ -2,8 +2,12 @@ mod auth;
 pub use auth::*;
 
 use crate::utils::ErrorIf;
+use fst_macros::{api_error, ErrorIf};
 use salvo::{http::StatusError, writer::Json, Piece, Response};
 use serde::Serialize;
+
+mod response;
+use response::AppResponse;
 
 #[derive(Debug)]
 pub enum Error {
@@ -12,7 +16,6 @@ pub enum Error {
 
 impl Piece for Error {
     fn render(self, res: &mut Response) {
-        tracing::info!("Error");
         match self {
             Self::Auth(a) => a.render(res),
         };
