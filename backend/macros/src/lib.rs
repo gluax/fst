@@ -1,4 +1,3 @@
-use api_error::ApiError;
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, DeriveInput};
 
@@ -12,9 +11,10 @@ pub fn derive_error_if(input: TokenStream) -> TokenStream {
         .into()
 }
 
-#[proc_macro_attribute]
-pub fn api_error(_attrs: TokenStream, input: TokenStream) -> TokenStream {
-    api_error::derive(parse_macro_input!(input as ApiError))
+#[proc_macro_derive(ApiError, attributes(api_error))]
+pub fn api_error(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    api_error::derive(input)
         .unwrap_or_else(|err| err.to_compile_error())
         .into()
 }

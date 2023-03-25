@@ -1,5 +1,6 @@
-use salvo::writer::Json;
 use serde_json::json;
+
+use crate::errors::AppResponse;
 
 use super::*;
 
@@ -7,8 +8,12 @@ use super::*;
 pub async fn login(req: &mut Request, res: &mut Response) -> Result<()> {
     Login::validate(req).await?;
     res.set_status_code(StatusCode::OK);
-    res.render(Json(json!({
-        "status": "Logged in.",
-    })));
+    // TODO: how to clean this up?
+    res.render(AppResponse::<_, ()>::from_response(
+        200,
+        json!({
+            "status": "Logged in.",
+        }),
+    ));
     Ok(())
 }

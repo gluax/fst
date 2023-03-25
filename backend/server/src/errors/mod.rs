@@ -1,13 +1,12 @@
 mod auth;
 pub use auth::*;
 
-use crate::utils::ErrorIf;
-use fst_macros::{api_error, ErrorIf};
-use salvo::{http::StatusError, writer::Json, Piece, Response};
+use fst_macros::{ApiError, ErrorIf};
+use salvo::{Piece, Response};
 use serde::Serialize;
 
 mod response;
-use response::AppResponse;
+pub use response::AppResponse;
 
 #[derive(Debug)]
 pub enum Error {

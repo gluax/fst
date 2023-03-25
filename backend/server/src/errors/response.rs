@@ -1,3 +1,4 @@
+use salvo::Piece;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -24,5 +25,15 @@ impl<R, E> AppResponse<R, E> {
             response: Some(response),
             details: None,
         }
+    }
+}
+
+impl<R, E> Piece for AppResponse<R, E>
+where
+    R: Serialize + Send,
+    E: Serialize + Send,
+{
+    fn render(self, res: &mut salvo::Response) {
+        res.render(salvo::writer::Json(self))
     }
 }

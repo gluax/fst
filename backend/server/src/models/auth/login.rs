@@ -17,18 +17,18 @@ impl<'a> Validate for Login<'a> {
         let mut error = Self::Error::default();
         let data = match req.parse_json::<Login<'_>>().await {
             Err(e) => {
-                error.deserialize = Some(e.to_string());
+                error.invalid_data = Some(e.to_string());
                 return error.error_or_ok();
             }
             Ok(data) => data,
         };
 
         if data.username.is_empty() {
-            error.username = Some("Username cannot be empty.".to_string());
+            error.username = Some("Cannot be empty.".to_string());
         }
 
         if data.password.is_empty() {
-            error.password = Some("Password cannot be empty.".to_string());
+            error.password = Some("Cannot be empty.".to_string());
         }
 
         error.error_or_ok()
