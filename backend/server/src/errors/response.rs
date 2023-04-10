@@ -1,27 +1,38 @@
 use salvo::Piece;
 use serde::Serialize;
 
+fn is_successful_code(code: &u16) -> bool {
+    match salvo::http::StatusCode::from_u16(*code) {
+        Ok(sc) => sc.is_success(),
+        // Shouldn't ever be reachable in case.
+        Err(_) => unreachable!("Should always return a valid HTTP status code."),
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct AppResponse<R, E> {
-    pub status_code: u16,
+    #[serde(skip_serializing_if = "is_successful_code")]
+    pub code: u16,
+    #[serde(flatten)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response: Option<R>,
+    #[serde(flatten)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<E>,
 }
 
 impl<R, E> AppResponse<R, E> {
-    pub fn from_error(status_code: u16, details: E) -> Self {
+    pub fn from_error(code: u16, details: E) -> Self {
         Self {
-            status_code,
+            code,
             response: None,
             details: Some(details),
         }
     }
 
-    pub fn from_response(status_code: u16, response: R) -> Self {
+    pub fn from_response(code: u16, response: R) -> Self {
         Self {
-            status_code,
+            code,
             response: Some(response),
             details: None,
         }

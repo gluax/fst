@@ -4,4 +4,4 @@ mod health_check;
 pub use health_check::*;
 
 use crate::{errors::Result, models::*, utils::Validate};
-use salvo::{handler, http::StatusCode, Request, Response};
+use salvo::{handler, http::StatusCode, Response};
