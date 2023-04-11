@@ -6,3 +6,5 @@ pub use login::*;
 // pub use register::*;
 
 use super::*;
+
+use fst_macros::Validate;

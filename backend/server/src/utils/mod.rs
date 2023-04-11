@@ -1,13 +1,5 @@
-use crate::errors::Result;
-
-pub trait ErrorIf: Default {
-    fn error_or_ok(self) -> Result<()>;
-}
-
 pub trait Validate {
-    type Error: ErrorIf;
-
-    fn validate(self) -> Result<()>;
+    fn validate(self) -> salvo::Result<()>;
 }
 
 pub trait RoutingGroup {

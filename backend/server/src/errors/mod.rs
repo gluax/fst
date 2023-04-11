@@ -1,24 +1,14 @@
-mod auth;
-pub use auth::*;
+// TODO not sure if this is even needed
 
-use fst_macros::{ApiError, ErrorIf};
-use salvo::{Piece, Response};
-use serde::Serialize;
+// use salvo::{Piece, Response};
 
-mod response;
-pub use response::AppResponse;
+// #[derive(Debug)]
+// pub enum Error {}
 
-#[derive(Debug)]
-pub enum Error {
-    Auth(auth::Auth),
-}
+// impl Piece for Error {
+//     fn render(self, res: &mut Response) {
+//         match self {};
+//     }
+// }
 
-impl Piece for Error {
-    fn render(self, res: &mut Response) {
-        match self {
-            Self::Auth(a) => a.render(res),
-        };
-    }
-}
-
-pub type Result<T> = core::result::Result<T, Error>;
+// pub type Result<T> = core::result::Result<T, Error>;

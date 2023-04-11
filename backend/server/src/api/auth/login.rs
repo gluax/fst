@@ -1,19 +1,12 @@
 use serde_json::json;
 
-use crate::errors::AppResponse;
-
 use super::*;
 
 #[handler]
-pub async fn login(data: Login<'_>, res: &mut Response) -> Result<()> {
-    // NICE
+pub async fn login(data: Login<'_>, res: &mut Response) -> salvo::Result<()> {
     data.validate()?;
-    res.set_status_code(StatusCode::OK);
-    res.render(AppResponse::<_, ()>::from_response(
-        200,
-        json!({
-            "status": "Logged in.",
-        }),
-    ));
+    res.render(salvo::writer::Json(json!({
+        "msg": "Logged in.",
+    })));
     Ok(())
 }

@@ -1,29 +1,37 @@
-use fst_macros::Validate;
-use salvo::prelude::Extractible;
+use salvo::prelude::{Extractible, StatusError};
 
 use super::*;
 
-fn validate_username(username: &str) -> Option<String> {
+// TODO: genericize empty string checks with proc macro?
+
+fn validate_username(username: &str) -> salvo::Result<()> {
     if username.is_empty() {
-        return Some("Cannot be empty.".to_string());
+        Err(StatusError::bad_request()
+            .with_summary("Invalid Payload")
+            .with_detail("Username cannot be empty"))?;
     }
 
-    None
+    Ok(())
 }
 
-fn validate_password(password: &str) -> Option<String> {
+fn validate_password(password: &str) -> salvo::Result<()> {
     if password.is_empty() {
-        return Some("Cannot be empty.".to_string());
+        Err(StatusError::bad_request()
+            .with_summary("Invalid Payload")
+            .with_detail("Password cannot be empty"))?;
     }
 
-    None
+    Ok(())
 }
 
 #[derive(Debug, Deserialize, Extractible, Validate)]
 #[extract(default_source(from = "body", format = "json"))]
-#[validate(error = "crate::errors::Login")]
+// TODO: consider the following
+// #[validate(with = "validate_login")]
 pub struct Login<'a> {
     #[validate(with = "validate_username")]
+    // TODO: something like this maybe?
+    // #[validate(non_empty_string)]
     #[serde(borrow)]
     username: Cow<'a, str>,
     #[validate(with = "validate_password")]
