@@ -1,53 +1,56 @@
+use regex::Regex;
+
+use crate::utils::Validate;
+
 use super::*;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Extractible)]
+#[extract(default_source(from = "body", format = "json"))]
+// TODO: it should be a top level validate fn so a user can check pw fields are equal
 pub struct Register<'a> {
     #[serde(borrow)]
-    username: Cow<'a, str>,
+    // #[validate(with = "validate_username")]
+    pub username: Cow<'a, str>,
     #[serde(borrow)]
-    password: Cow<'a, str>,
+    // #[validate(with = "validate_email")]
+    pub email: Cow<'a, str>,
     #[serde(borrow)]
+    // #[validate(with = "validate_password")]
+    pub password: Cow<'a, str>,
+    #[serde(borrow)]
+    // #[validate(with = "validate_password_confirmation")]
     password_confirmation: Cow<'a, str>,
 }
 
+#[autometrics::autometrics]
+impl<'a> Validate for Register<'a> {
+    fn validate(&self) -> salvo::Result<()> {
+        validate_non_empty_field("username", &self.username)?;
+        validate_non_empty_field("email", &self.email)?;
 
-// impl Summary for RegisterSummary {
-//     fn return_summary(self) -> Option<Self> {
-//         if self.username.is_none() && self.password.is_none() {
-//             None
-//         } else {
-//             Some(self)
-//         }
-//     }
-// }
+        let re = Regex::new(r#"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#).expect("TODO");
 
-// impl<'a> Validate for Register<'a> {
-//     type Summary = RegisterSummary;
-//     fn validate(&self) -> Option<Self::Summary> {
-//         let mut summary = Self::Summary::default();
+        if !re.is_match(&self.email) {
+            Err(StatusError::bad_request()
+                .with_summary("Bad Email")
+                .with_detail("Not a valid email."))?;
+        }
 
-//         if self.username.is_empty() {
-//             summary.username = Some("Username cannot be empty.".to_string());
-//         }
+        validate_non_empty_field("password", &self.password)?;
+        validate_non_empty_field("password_confirmation", &self.password_confirmation)?;
 
-//         match (self.password.as_ref(), self.password_confirmation.as_ref()) {
-//             (pw, _) if pw.is_empty() => {
-//                 summary.password = Some("Password cannot be empty.".to_string())
-//             }
-//             // TODO if pw contains length is too long or short
-//             // TODO if pw contains invalid characters
-//             // (pw, _) if pw
-//             (_, cf) if cf.is_empty() => {
-//                 summary.password_confirmation =
-//                     Some("Password confirmation cannot be empty.".to_string())
-//             }
-//             (pw, cf) if pw != cf => {
-//                 summary.password =
-//                     Some("Password and Password Confirmation must match.".to_string())
-//             }
-//             _ => {}
-//         }
+        if self.password != self.password_confirmation {
+            Err(StatusError::bad_request()
+                .with_summary("Bad Password")
+                .with_detail("Password fields don't match"))?;
+        }
 
-//         summary.return_summary()
-//     }
-// }
+        if self.password.len() < 12 {
+            Err(StatusError::bad_request()
+                .with_summary("Bad Password")
+                .with_detail("Password too short"))?;
+        }
+
+        Ok(())
+    }
+}

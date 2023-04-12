@@ -1,5 +1,5 @@
 pub trait Validate {
-    fn validate(self) -> salvo::Result<()>;
+    fn validate(&self) -> salvo::Result<()>;
 }
 
 pub trait RoutingGroup {

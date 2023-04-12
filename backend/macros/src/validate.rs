@@ -43,7 +43,7 @@ pub fn derive(input: DeriveInput) -> syn::Result<TokenStream> {
     Ok(quote! {
       impl #impl_generics crate::utils::Validate for #ident #ty_generics #where_clause {
 
-        fn validate(self) -> ::salvo::Result<()> {
+        fn validate(&self) -> ::salvo::Result<()> {
             #(#error_fields)*
 
             Ok(())

@@ -21,10 +21,13 @@ panic = "abort"
 strip = true
 
 [workspace.dependencies]
+bcrypt = { version = "0.14" }
 fst-macros = { path = "./macros" }
 jsonwebtoken = { version = "8.2", default-features = false }
 mongodb = { version = "2.4", default-features = false }
+once_cell = { version = "1.17", default-features = false }
 parking_lot = { version = "0.12", default-features = false }
+regex = { version = "1.7", default-features = false }
 salvo = { version = "0.37", default-features = false, features = [
   "affix",
   "anyhow",

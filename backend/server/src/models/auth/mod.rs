@@ -1,10 +1,22 @@
 mod claims;
 pub use claims::*;
+
 mod login;
 pub use login::*;
-// mod register;
-// pub use register::*;
+
+mod register;
+pub use register::*;
 
 use super::*;
 
-use fst_macros::Validate;
+use salvo::prelude::{Extractible, StatusError};
+
+fn validate_non_empty_field(name: &str, value: &str) -> salvo::Result<()> {
+    if value.is_empty() {
+        Err(StatusError::bad_request()
+            .with_summary("Invalid Payload")
+            .with_detail(format!("{name} cannot be empty")))?;
+    }
+
+    Ok(())
+}
