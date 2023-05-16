@@ -10,6 +10,7 @@ use crate::{
     config::Config,
     utils::{emails::send_email, verification_codes::generate_verification_code},
 };
+use maud::{html, DOCTYPE};
 
 use super::*;
 
@@ -46,34 +47,34 @@ impl User {
     }
 
     // TODO @app owner add your own fancy html email
-    fn verify_html_template() -> String {
-        format!(
-            "<!DOCTYPE_HTML>
-        <html lang=\"en\">
-        <head>
-            <meta charset=\"UTF-8\">
-            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-            <title>AppName: Email Verification Required!</title>
-        </head>
-        <body>
-            <div style=\"display: flex; flex-direction: column; align-items: center;\">
-                <h2 style=\"font-family: Arial, Helvetica, sans-serif;\">Verification Code</h2>
-                <h4 style=\"font-family: Arial, Helvetica, sans-serif;\">Do not share this code with others</h4>
-                <p style=\"font-family: Arial, Helvetica, sans-serif;\">Confirmation code: {}>
-            </div>
-        </body>
-        </html>
-        ",
-        generate_verification_code(8),
-        )
+    fn verify_html_template(code: &str) -> String {
+        html! {
+            (DOCTYPE)
+            html lang="en" {
+                head {
+                    meta charset="UTF-8";
+                    meta http-equiv="Content-Type" content="text/html charset=UTF-8";
+                    meta name="viewport" content="width=device-width, initial-scale=1.0";
+                    title { "AppName: Email Verification Required!" }
+                }
+                body {
+                    table style="display: flex; flex-direction: column; align-items: center;" {
+                        h2 style="font-family: Arial, Helvetica, sans-serif;" { "Verification Code" }
+                        h4 style="font-family: Arial, Helvetica, sans-serif;" { "Do not share this code with others" }
+                        p style="font-family: Arial, Helvetica, sans-serif;" { "Confirmation code: " (code) }
+                    }
+                }
+            }
+        }.into_string()
     }
 
     pub async fn send_verification_email(&self, config: &Config) -> salvo::Result<()> {
+        let verification_code = generate_verification_code(8);
         send_email(
             &config.email_app_credentials,
             &config.verification_email_from,
             format!("{} <{}>", self.username, self.email),
-            Self::verify_html_template(),
+            Self::verify_html_template(&verification_code),
         )
         .await
         .expect("TODO");

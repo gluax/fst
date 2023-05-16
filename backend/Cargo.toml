@@ -56,3 +56,4 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 ] }
 dotenv = "0.15.0"
 rand = { version = "0.8.5", default-features = false }
+maud = { version = "0.25.0", default-features = false }

@@ -4,6 +4,7 @@ use lettre::{
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
 };
 
+#[autometrics::autometrics]
 pub async fn send_email<T: AsRef<str>, B: ToString>(
     credentials: &Credentials,
     from: &Mailbox,
@@ -13,6 +14,7 @@ pub async fn send_email<T: AsRef<str>, B: ToString>(
     let email = Message::builder()
         .from(from.clone())
         .to(to.as_ref().parse().expect("TODO: Failed to parse to email"))
+        // TODO: @gluax take subject as an arg
         .subject("Email Verification Required")
         .multipart(
             MultiPart::alternative()
@@ -26,6 +28,7 @@ pub async fn send_email<T: AsRef<str>, B: ToString>(
                 .singlepart(
                     SinglePart::builder()
                         .header(header::ContentType::TEXT_HTML)
+                        // .header(header::ContentTransferEncoding::Base64)
                         .body(body.to_string()),
                 ),
         )
