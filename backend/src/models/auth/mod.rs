@@ -1,6 +1,9 @@
 mod claims;
 pub use claims::*;
 
+mod email_verification;
+pub use email_verification::*;
+
 mod login;
 pub use login::*;
 

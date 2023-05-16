@@ -1,4 +1,9 @@
-use mongodb::{bson::oid::ObjectId, Client, Database};
+use chrono::{DateTime, Utc};
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    Client, Collection, Database,
+};
+
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
@@ -7,11 +12,13 @@ use std::borrow::Cow;
 
 mod auth;
 pub use auth::*;
+
 mod user;
 pub use user::*;
 
 pub static MONGODB: OnceCell<Database> = OnceCell::new();
 
+// TODO: @gluax should be based on env var as well
 const DATABASE_NAME: &str = "db";
 
 #[inline]
@@ -19,11 +26,7 @@ fn get_mongodb() -> &'static Database {
     unsafe { MONGODB.get_unchecked() }
 }
 
-pub async fn init_db() {
-    // TODO config file
-    // TODO move to models? utils?
-    let mongodb_uri =
-        std::env::var("MONGODB_URI").unwrap_or_else(|_| "mongodb://127.0.0.1:27017".into());
+pub async fn init_db(mongodb_uri: &str) {
     // TODO handle this expect call
     let client = Client::with_uri_str(mongodb_uri)
         .await

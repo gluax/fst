@@ -2,8 +2,6 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2,
 };
-use chrono::{DateTime, Utc};
-use mongodb::{bson::doc, Collection};
 use salvo::prelude::StatusError;
 
 use crate::{
@@ -13,6 +11,8 @@ use crate::{
 use maud::{html, DOCTYPE};
 
 use super::*;
+
+mod email_verified;
 
 // TODO mongo doesn't yet support zero-copy deserialization
 // https://jira.mongodb.org/browse/RUST-1175
@@ -112,7 +112,7 @@ impl UserCollection {
     pub async fn create(&self, data: Register<'_>) -> salvo::Result<User> {
         let user = User::try_from(data)?;
 
-        // TODO fix repetitiveness
+        // TODO fix repetitiveness?
         if self.find_by_email(&user.email).await?.is_some() {
             Err(StatusError::conflict()
                 .summary("Email already in use")

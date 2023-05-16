@@ -1,7 +1,6 @@
 use salvo::Listener;
 use std::borrow::Cow;
 
-mod affixes;
 mod api;
 mod config;
 mod errors;
@@ -36,7 +35,9 @@ async fn main() {
     // let subscriber = tracing_subscriber::registry().with(filter);
     // tracing::subscriber::set_global_default(subscriber).unwrap();
 
-    models::init_db().await;
+    let config = config::Config::from_env().expect("TODO");
+
+    models::init_db(&config.mongodb_uri).await;
 
     let auth_handler: JwtAuth<JwtClaims> = JwtAuth::new(SECRET_KEY.to_owned())
         .finders(vec![
@@ -48,6 +49,7 @@ async fn main() {
 
     let router = Router::with_hoop(auth_handler)
         .hoop(salvo::logging::Logger::new())
+        .hoop(salvo::affix::inject(config))
         // .hoop(middleware::set_status_code)
         .push(Router::with_path("metrics").get(crate::api::metrics))
         .push(
@@ -55,7 +57,6 @@ async fn main() {
                 .push(Router::with_path("login").post(crate::api::login))
                 .push(Router::with_path("register").post(crate::api::register)),
         );
-    let router = affixes::attach_affixes(router);
     tracing::info!("Listening on http://127.0.0.1:8888");
     let acceptor = TcpListener::new("127.0.0.1:8888").bind().await;
     Server::new(acceptor).serve(router).await;
