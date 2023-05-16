@@ -32,8 +32,8 @@ impl<'a> Validate for Register<'a> {
 
         if !re.is_match(&self.email) {
             Err(StatusError::bad_request()
-                .with_summary("Bad Email")
-                .with_detail("Not a valid email."))?;
+                .summary("Bad Email")
+                .detail("Not a valid email."))?;
         }
 
         validate_non_empty_field("password", &self.password)?;
@@ -41,14 +41,14 @@ impl<'a> Validate for Register<'a> {
 
         if self.password != self.password_confirmation {
             Err(StatusError::bad_request()
-                .with_summary("Bad Password")
-                .with_detail("Password fields don't match"))?;
+                .summary("Bad Password")
+                .detail("Password fields don't match"))?;
         }
 
         if self.password.len() < 12 {
             Err(StatusError::bad_request()
-                .with_summary("Bad Password")
-                .with_detail("Password too short"))?;
+                .summary("Bad Password")
+                .detail("Password too short"))?;
         }
 
         Ok(())

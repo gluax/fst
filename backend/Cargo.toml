@@ -1,10 +1,8 @@
-[workspace]
-resolver = "2"
+[package]
+name = "fst-server"
+version = "0.1.0"
 edition = "2021"
-members = ["macros", "server"]
-
-[workspace.package]
-rust-version = "1.67"
+rust-version = "1.69"
 
 [profile.dev]
 codegen-units = 512
@@ -20,17 +18,26 @@ opt-level = 3
 panic = "abort"
 strip = true
 
-[workspace.dependencies]
-bcrypt = { version = "0.14" }
-fst-macros = { path = "./macros" }
+[dependencies]
+autometrics = { version = "0.4", features = ["prometheus-exporter"] }
+argon2 = "0.5"
+chrono = { version = "0.4", features = ["serde"] }
 jsonwebtoken = { version = "8.2", default-features = false }
-mongodb = { version = "2.4", default-features = false }
+lettre = { version = "0.10", default-features = false, features = [
+  "builder",
+  "smtp-transport",
+  "tokio1",
+  "tokio1-native-tls",
+] }
+mongodb = { version = "2.4", default-features = false, features = [
+  "tokio-runtime",
+] }
 once_cell = { version = "1.17", default-features = false }
 parking_lot = { version = "0.12", default-features = false }
 regex = { version = "1.7", default-features = false }
-salvo = { version = "0.37", default-features = false, features = [
+salvo = { version = "0.41", default-features = false, features = [
   "affix",
-  "anyhow",
+  "http1",
   "jwt-auth",
   "logging",
 ] }
@@ -47,3 +54,5 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
   "smallvec",
   "std",
 ] }
+dotenv = "0.15.0"
+rand = { version = "0.8.5", default-features = false }

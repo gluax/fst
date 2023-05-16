@@ -1,7 +1,9 @@
+use salvo::Listener;
 use std::borrow::Cow;
 
-// mod affixes;
+mod affixes;
 mod api;
+mod config;
 mod errors;
 mod middleware;
 mod models;
@@ -37,15 +39,15 @@ async fn main() {
     models::init_db().await;
 
     let auth_handler: JwtAuth<JwtClaims> = JwtAuth::new(SECRET_KEY.to_owned())
-        .with_finders(vec![
+        .finders(vec![
             // Box::new(HeaderFinder::new()),
             Box::new(QueryFinder::new("jwt_token")),
             // Box::new(CookieFinder::new("jwt_token")),
         ])
-        .with_response_error(false);
+        .response_error(false);
 
     let router = Router::with_hoop(auth_handler)
-        .hoop(salvo::logging::Logger)
+        .hoop(salvo::logging::Logger::new())
         // .hoop(middleware::set_status_code)
         .push(Router::with_path("metrics").get(crate::api::metrics))
         .push(
@@ -53,8 +55,8 @@ async fn main() {
                 .push(Router::with_path("login").post(crate::api::login))
                 .push(Router::with_path("register").post(crate::api::register)),
         );
+    let router = affixes::attach_affixes(router);
     tracing::info!("Listening on http://127.0.0.1:8888");
-    Server::new(TcpListener::bind("127.0.0.1:8888"))
-        .serve(router)
-        .await;
+    let acceptor = TcpListener::new("127.0.0.1:8888").bind().await;
+    Server::new(acceptor).serve(router).await;
 }
