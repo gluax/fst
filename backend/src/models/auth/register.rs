@@ -1,7 +1,5 @@
 use regex::Regex;
 
-use crate::utils::Validate;
-
 use super::*;
 
 #[derive(Debug, Deserialize, Extractible)]

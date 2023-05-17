@@ -1,3 +1,5 @@
+use crate::utils::Validate;
+
 use chrono::{DateTime, Utc};
 use mongodb::{
     bson::{doc, oid::ObjectId},
